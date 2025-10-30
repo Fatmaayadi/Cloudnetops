@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from extensions import db, jwt
 
 def create_app():
@@ -11,8 +11,19 @@ def create_app():
     db.init_app(app)
     jwt.init_app(app)
 
+    # print which header/name/type the JWT extension will look for
+    print("JWT header name:", app.config.get('JWT_HEADER_NAME', 'Authorization'))
+    print("JWT header type:", app.config.get('JWT_HEADER_TYPE', 'Bearer'))
+
     from auth.routes import auth_bp
     app.register_blueprint(auth_bp, url_prefix="/auth")
+    from deploy.routes import deploy_bp
+    app.register_blueprint(deploy_bp, url_prefix='/deploy')
+
+    @app.route('/debug/headers', methods=['GET','POST'])
+    def debug_headers():
+        # echo request headers so you can verify Authorization reaches the server
+        return jsonify({k: v for k, v in request.headers.items()})
 
     @app.route('/')
     def home():
@@ -20,12 +31,14 @@ def create_app():
 
     return app
 
-# ✅ Add this block below
+
 if __name__ == "__main__":
     app = create_app()
     with app.app_context():
         from auth.models import User
-        print("🗂️ Creating database if not exists...")
+        print(" Creating database if not exists...")
         db.create_all()
-    print("✅ Database initialized successfully.")
+    print(" Database initialized successfully.")
     app.run(debug=True)
+
+
