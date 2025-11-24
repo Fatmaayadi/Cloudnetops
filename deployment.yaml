@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudnetops-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudnetops-backend
+  template:
+    metadata:
+      labels:
+        app: cloudnetops-backend
+    spec:
+      containers:
+      - name: backend
+        image: cloudnetops-backend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+        envFrom:
+        - secretRef:
+            name: cloudnetops-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: cloudnetops-backend
+  ports:
+  - port: 5000
+    targetPort: 5000
+  type: NodePort

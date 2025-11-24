@@ -1,9 +1,16 @@
 from flask import Flask, request, jsonify
 from extensions import db, jwt
+from dotenv import load_dotenv
+import os
+from flask import Flask
+from prometheus_flask_exporter import PrometheusMetrics
+# Load variables from .env file
+load_dotenv()
+
 
 def create_app():
     app = Flask(__name__)
-
+    metrics = PrometheusMetrics(app)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cloudnetops.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JWT_SECRET_KEY'] = 'cloudnetops_secret'
@@ -39,6 +46,4 @@ if __name__ == "__main__":
         print(" Creating database if not exists...")
         db.create_all()
     print(" Database initialized successfully.")
-    app.run(debug=True)
-
-
+    app.run(host="0.0.0.0", port=5000)

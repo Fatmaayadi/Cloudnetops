@@ -1,4 +1,8 @@
-Flask==2.0.1
+Flask==2.2.5
+Werkzeug==2.2.3
 Flask-JWT-Extended==4.5.2
 PyJWT==2.9.0
-# ...other dependencies...
+Flask-SQLAlchemy==2.5.1
+SQLAlchemy==1.4.46
+python-dotenv==1.0.0
+boto3==1.34.162
