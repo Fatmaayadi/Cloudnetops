@@ -1,7 +1,13 @@
 # deployment/routes.py
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
-from deploy.aws_services import create_ec2_instance, terminate_ec2_instance, create_s3_bucket, delete_s3_bucket
+from deploy.aws_manager import (
+    create_ec2_instance,
+    terminate_ec2_instance,
+    create_s3_bucket,
+    delete_s3_bucket
+)
+
 
 deploy_bp = Blueprint('deploy', __name__)
 

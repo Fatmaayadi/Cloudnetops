@@ -1,38 +1,44 @@
+import os
 from flask import Flask, request, jsonify
 from extensions import db, jwt
 from dotenv import load_dotenv
-import os
-from flask import Flask
 from prometheus_flask_exporter import PrometheusMetrics
-# Load variables from .env file
 load_dotenv()
 
 
 def create_app():
     app = Flask(__name__)
+
+    # --- PROMETHEUS ---
     metrics = PrometheusMetrics(app)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cloudnetops.db'
+
+    # --- DATABASE LOCATION ---
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    DB_PATH = os.path.join(BASE_DIR, "instance", "cloudnetops.db")
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_PATH}"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JWT_SECRET_KEY'] = 'cloudnetops_secret'
 
+    # Initialize extensions
     db.init_app(app)
     jwt.init_app(app)
 
-    # print which header/name/type the JWT extension will look for
-    print("JWT header name:", app.config.get('JWT_HEADER_NAME', 'Authorization'))
-    print("JWT header type:", app.config.get('JWT_HEADER_TYPE', 'Bearer'))
+    print("JWT header:", app.config.get('JWT_HEADER_NAME', 'Authorization'))
+    print("JWT type:", app.config.get('JWT_HEADER_TYPE', 'Bearer'))
 
+    # Register blueprints
     from auth.routes import auth_bp
-    app.register_blueprint(auth_bp, url_prefix="/auth")
     from deploy.routes import deploy_bp
-    app.register_blueprint(deploy_bp, url_prefix='/deploy')
+    from monitoring.routes import monitor_bp
+    from ai.api import ai_bp           # <---- à ajouter pour IA
 
-    @app.route('/debug/headers', methods=['GET','POST'])
-    def debug_headers():
-        # echo request headers so you can verify Authorization reaches the server
-        return jsonify({k: v for k, v in request.headers.items()})
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(deploy_bp, url_prefix="/deploy")
+    app.register_blueprint(monitor_bp, url_prefix="/monitor")
+    app.register_blueprint(ai_bp, url_prefix="/ai")   # <---- à ajouter
 
-    @app.route('/')
+    @app.route("/")
     def home():
         return {"message": "Bienvenue sur CloudNetOps API"}
 
@@ -41,9 +47,14 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
+
     with app.app_context():
-        from auth.models import User
-        print(" Creating database if not exists...")
-        db.create_all()
-    print(" Database initialized successfully.")
+        db_path = app.config["SQLALCHEMY_DATABASE_URI"].replace("sqlite:///", "")
+
+        if not os.path.exists(db_path):
+            print("Database not found → Creating database...")
+            db.create_all()
+        else:
+            print("Database already exists → OK")
+
     app.run(host="0.0.0.0", port=5000)

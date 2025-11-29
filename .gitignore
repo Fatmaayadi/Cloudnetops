@@ -1,1 +1,25 @@
+# Environment
 .env
+
+# Database
+instance/cloudnetops.db
+
+# Virtual environment
+venv/
+
+# Model / artifacts
+*.pkl
+*.joblib
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+
+# IDE / OS
+.DS_Store
+*.swp
+.idea/
+.vscode/
