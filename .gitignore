@@ -1,25 +1,26 @@
-# Environment
+# Frontend - Node modules
+node_modules/
+
+# Frontend build
+dist/
+build/
+
+# Vite cache
+.vite/
+
+# Environment (frontend)
 .env
+.env.local
+.env.development
+.env.production
 
-# Database
-instance/cloudnetops.db
+# Logs (frontend)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Virtual environment
-venv/
-
-# Model / artifacts
-*.pkl
-*.joblib
-
-# Python cache
-__pycache__/
-*.pyc
-
-# Logs
-*.log
-
-# IDE / OS
+# System / Editor
 .DS_Store
-*.swp
+Thumbs.db
 .idea/
 .vscode/

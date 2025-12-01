@@ -1,0 +1,455 @@
+:root{
+	/* Sky-blue themed variables for a polished, airy look */
+	--sky-50: #f0f9ff;
+	--sky-100: #deefff;
+	--sky-200: #bfe9ff;
+	--sky-400: #7ad0ff;
+	--sky-500: #38bdf8; /* primary accent */
+	--sky-600: #0ea5e9;
+	--sky-700: #0369a1;
+
+	--bg: linear-gradient(180deg, rgba(10,30,50,0.03), rgba(10,30,50,0.06));
+	--glass: rgba(255,255,255,0.42);
+	--muted: #274151; /* calmer text tone on light backgrounds */
+	--text: #062035;
+	--accent: var(--sky-400);
+	--accent-2: var(--sky-500);
+	--danger: #ef4444;
+	--radius:14px;
+	--card-shadow: 0 18px 48px rgba(10,25,40,0.14);
+}
+
+	*{box-sizing:border-box}
+
+	 /* allow normal page scrolling at the document level; application components handle their own scrolling
+		 (this makes the browser scrollbar sit at the very right edge of the viewport) */
+	 html, body { height: 100%; }
+body {
+	margin: 0;
+	font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	color: var(--text);
+	-webkit-font-smoothing: antialiased;
+
+		/* lively animated sky-blue background: big cloud art + moving gradient ribbons */
+		background-color: var(--sky-50);
+		background-image:
+			url('/assets/cloud-blue.svg'),
+			radial-gradient(1200px 700px at 8% 14%, rgba(58,145,220,0.14), transparent 22%),
+			linear-gradient(135deg, rgba(125,211,252,0.10), rgba(56,189,248,0.06));
+		background-repeat: no-repeat, no-repeat, no-repeat;
+		/* fill the viewport fully so there's no empty right-side gap */
+		background-position: center center, center center, center top;
+		background-size: cover, cover, cover;
+		animation: ribbonMove 12s linear infinite alternate;
+}
+
+/* AUTH PAGES: ensure a clean, light background */
+body.auth-page {
+  background-image: url('/assets/cloud-blue.svg');
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: var(--sky-50); /* fallback for better consistency */
+}
+
+/* Ensure login card is visually distinct and centered */
+body.auth-page .login-card {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 30px 80px rgba(8, 24, 40, 0.08);
+  border-radius: 12px;
+  padding: 28px;
+  max-width: 420px;
+  margin: auto;
+}
+
+/* Adjust login-banner for better responsiveness */
+body.auth-page .login-banner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 60%;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px 0 0 8px;
+  filter: brightness(0.96) saturate(110%);
+}
+
+@media (max-width: 900px) {
+  .login-banner {
+    display: none;
+  }
+  .login-card {
+    margin-left: 0;
+    width: 92%;
+  }
+}
+
+/* make sure the login card sits above background artwork */
+body.auth-page .login-card{background:rgba(255,255,255,0.98);box-shadow:0 30px 80px rgba(8,24,40,0.08)}
+
+
+
+
+	/* subtle vignette to improve contrast */
+	body::before{content:'';position:fixed;inset:0;pointer-events:none;background: radial-gradient(60% 40% at 10% 20%, rgba(255,255,255,0.04), transparent 22%), linear-gradient(180deg, rgba(10,20,30,0.02), rgba(10,30,40,0.08));mix-blend-mode:multiply;opacity:0.9}
+
+	/* utilities */
+	.fade-in{animation:fadeIn .6s ease both}
+	@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+	/* slow moving ribbons to make the background feel alive */
+	@keyframes ribbonMove{
+		0%{ background-position: left 10% center, center center, center top }
+		50%{ background-position: left 6% center, center 8% top, center 6% top }
+		100%{ background-position: left 2% center, center 16% top, center 12% top }
+	}
+
+	/* top nav */
+	.topnav{display:flex;gap:12px;padding:12px 20px;background:linear-gradient(90deg, rgba(3,7,18,0.6), rgba(3,7,18,0.85));border-bottom:1px solid rgba(255,255,255,0.03);align-items:center}
+	.topnav .brand-left{display:flex;gap:12px;align-items:center;margin-right:8px}
+	.brand-small{width:36px;height:36px}
+	.brand-title{font-weight:700;margin-left:4px}
+	.topnav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px;display:flex;gap:8px;align-items:center;font-weight:600;transition:all .18s ease}
+	.topnav a:hover{color:#fff;background:rgba(255,255,255,0.02);transform:translateY(-2px)}
+	.nav-icon{width:18px;height:18px;opacity:0.95;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4))}
+/* Sidebar layout */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 220px;
+  padding: 20px 12px;
+
+  /* ⭐ Nouveau background sidebar – doux et pro */
+  background: linear-gradient(180deg, #0F3A47, #0C2E39);
+
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 50;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+}
+
+.sidebar .brand-small {
+  width: 40px;
+  height: 40px;
+}
+
+.sidebar .brand-title {
+  font-weight: 800;
+  color: #E8FFF4; /* cohérent avec body */
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.sidebar-nav a {
+  color: #B8CED4; /* muted teal */
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-weight: 600;
+}
+
+.sidebar-nav a:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #E8FFF4; /* texte plus clair au hover */
+}
+
+	.main-content{margin-left:220px;padding:20px;min-height:100vh;overflow-y:auto;overflow-x:hidden;max-height:100vh;width:calc(100% - 220px);-webkit-overflow-scrolling:touch}
+	/* when sidebar is hidden (login / signup), remove left offset */
+	.main-content.no-sidebar{margin-left:0}
+
+	/* Collapsed sidebar styles */
+	.sidebar.collapsed{width:72px}
+	.sidebar.collapsed .brand-title{display:none}
+	.sidebar.collapsed .nav-text{display:none}
+	.sidebar.collapsed .sidebar-toggle{transform:rotate(180deg)}
+
+	/* Active link */
+	.sidebar-nav a.active{background:linear-gradient(90deg, rgba(125,211,252,0.08), rgba(56,189,248,0.06));color:var(--text);box-shadow:inset 4px 0 0 var(--accent);}
+
+	/* Sidebar toggle button */
+	.sidebar-toggle{margin-left:auto;background:transparent;border:0;color:var(--muted);font-weight:700;padding:6px 8px;border-radius:8px;cursor:pointer}
+	.sidebar-toggle:hover{color:var(--text);background:rgba(255,255,255,0.02)}
+	.theme-toggle{margin-left:6px;background:linear-gradient(90deg,var(--accent),var(--accent-2));border:0;color:white;padding:6px 10px;border-radius:10px;font-weight:700;cursor:pointer}
+	.theme-toggle:hover{transform:translateY(-2px)}
+
+	/* cards and controls — glass panels with crisp shadows and a subtle accent bar */
+	.card{position:relative;overflow:hidden;padding:20px;border-radius:var(--radius);background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.5));border:1px solid rgba(20,45,60,0.06);backdrop-filter:blur(6px) saturate(110%);box-shadow:var(--card-shadow);transition:transform .22s cubic-bezier(.2,.9,.2,1), box-shadow .22s;min-height:120px;display:flex;flex-direction:column}
+	.card::after{content:'';position:absolute;left:0;right:0;height:4px;top:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));opacity:0.85;transform-origin:left;transition:transform .22s ease}
+	.card:hover{transform:translateY(-6px);box-shadow:0 30px 80px rgba(8,24,40,0.18)}
+	.card.interactive:hover{transform:translateY(-10px) scale(1.01);box-shadow:0 42px 96px rgba(8,24,40,0.2)}
+
+	/* Card header / body / footer */
+	.card-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+
+	/* small icon shown in card header */
+	.card-head{display:flex;align-items:center;gap:12px}
+	.card-icon{width:44px;height:44px;border-radius:10px;padding:8px;background:linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.6));display:inline-flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(10,30,50,0.06)}
+	.card-icon img{width:24px;height:24px}
+	.card-title{font-size:15px;font-weight:800;margin:0;color:var(--text)}
+	.card-sub{font-size:13px;color:var(--muted);margin:0}
+	.card-body{padding-top:6px;flex:1 1 auto}
+	.card-footer{display:flex;justify-content:space-between;gap:8px;margin-top:16px;align-items:center}
+	.card-actions{display:flex;gap:8px}
+	.card .metric{font-size:28px;font-weight:800;color:var(--sky-700)}
+
+	/* compact info chip */
+	.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,0.03);border:1px solid rgba(10,30,40,0.06);font-weight:700;color:var(--text);box-shadow:0 6px 18px rgba(3,15,24,0.06)}
+
+	/* Grid tuning for dashboard */
+	.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+	.card{grid-column:span 4}
+	.card.wide{grid-column:span 8;min-height:360px}
+	@media (max-width:1000px){
+		.grid{grid-template-columns:repeat(6,1fr)}
+		.card{grid-column:span 6}
+		.card.wide{grid-column:span 6}
+	}
+	@media (max-width:600px){
+		.grid{grid-template-columns:repeat(1,1fr)}
+		.card{grid-column:span 1}
+		.card.wide{grid-column:span 1}
+	}
+
+	/* Skeleton placeholder */
+	.skeleton{background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.06));border-radius:6px;display:inline-block}
+
+	/* iframe wrapper to keep responsive */
+	.iframe-wrapper{width:100%;overflow:hidden;border-radius:8px}
+	.iframe-wrapper iframe{display:block;width:100%;height:100%;border:0}
+
+	/* Make embedded iframes look less visually "black" by default: add a light surface behind and a small caption */
+	.iframe-outer{background:linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.78));border-radius:12px;padding:10px;border:1px solid rgba(20,40,60,0.06);box-shadow:0 10px 40px rgba(10,25,40,0.06)}
+	.iframe-caption{font-size:12px;color:var(--muted);margin-top:8px;display:flex;justify-content:space-between;align-items:center}
+	.iframe-caption .note{opacity:0.9}
+	.iframe-caption .small-link{font-size:12px;color:var(--sky-700);font-weight:700}
+
+	/* page header controls */
+	.page-header h1{margin:0}
+	.controls .button[disabled]{opacity:0.6;cursor:not-allowed}
+	.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+	.row{display:flex;gap:12px;align-items:flex-start}
+	.form-card label{display:block;margin-bottom:8px}
+	input,select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:var(--text);transition:box-shadow .18s, border-color .18s}
+	.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color: white;padding:12px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:800;box-shadow:0 8px 26px rgba(56,189,248,0.12)}
+	.primary:hover{filter:brightness(1.02);transform:translateY(-2px)}
+	.danger{background:var(--danger);color:white;padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+
+	.center-page{display:flex;min-height:80vh;align-items:center;justify-content:center;padding:48px 20px}
+	.form-card{width:420px;max-width:94vw}
+	.login-page{position:relative;min-height:80vh;display:flex;align-items:center;justify-content:center}
+	.login-banner{position:absolute;left:0;top:0;bottom:0;width:60%;background-size:cover;background-position:center;border-radius:8px 0 0 8px;filter:brightness(0.96) saturate(110%);display:block}
+	.login-card{position:relative;z-index:2;width:520px;margin:0 auto;padding:28px;background:rgba(255,255,255,0.97);box-shadow:0 30px 80px rgba(8,24,40,0.06);color:var(--text);border-radius:12px}
+		/* make the small brand logo friendlier in the login card */
+		.brand-logo{width:64px;height:64px;border-radius:12px;object-fit:cover}
+
+	/* Login specific tweaks */
+	.login-card h2{margin:0;font-size:22px}
+	.login-card .muted{margin-top:2px;font-size:13px;color:var(--muted)}
+	.login-card .primary{width:100%;font-weight:700}
+	.login-card label{display:block;margin-bottom:6px;font-size:13px}
+	.error{margin-top:10px;color:var(--danger);background:rgba(239,68,68,0.06);padding:8px;border-radius:8px}
+
+	/* cloud illustration */
+	.login-banner .cloud-illus{position:absolute;left:10%;bottom:8%;width:72%;opacity:0.98;filter:drop-shadow(0 18px 48px rgba(8,24,40,0.06));transform-origin:center;animation:floaty 6s ease-in-out infinite}
+
+/* subtle entrance + slow floating for the decorative cloud to make the page feel lively */
+@keyframes floaty {0%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.01)}100%{transform:translateY(0) scale(1)}}
+
+.banner-overlay{position:absolute;left:0;right:0;top:0;bottom:0;background:linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.35));border-radius:8px 0 0 8px}
+	@keyframes floaty {0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+
+	.wide{grid-column:span 2}
+	.button{display:inline-block;padding:8px 12px;border-radius:8px;background:transparent;color:var(--text);text-decoration:none;border:1px solid rgba(255,255,255,0.04)}
+
+	@media (max-width:900px){
+		.login-banner{display:none}
+		.login-card{margin-left:0;width:92%}
+		.card{padding:14px}
+		.topnav{flex-wrap:wrap}
+	}
+
+/* light theme overrides (toggleable via data-theme attribute on html element) */
+[data-theme="light"]{
+	--sky-50: #f3fbff;
+	--sky-100: #eaf8ff;
+	--sky-200: #dff5ff;
+	--sky-400: #9ed9f8;
+	--sky-500: #55c8ef;
+	--sky-700: #0a6786;
+	--bg: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(245,251,255,0.98));
+	--text: #062b3a;
+}
+
+/* General auth page container styling */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--sky-50);
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.98);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(8, 24, 40, 0.08);
+  max-width: 400px;
+  width: 100%;
+}
+
+.auth-card h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: var(--text);
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-card label {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.auth-card input,
+.auth-card select,
+.auth-card button {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.auth-card button {
+  background: var(--accent);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.auth-card button:disabled {
+  background: var(--muted);
+  cursor: not-allowed;
+}
+
+.auth-card .error {
+  color: var(--danger);
+  font-size: 13px;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 8px;
+  border-radius: 8px;
+}
+
+/* General auth page styling */
+.auth-page {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* the auth page should fill the viewport and allow the page to scroll if needed */
+	min-height: 100vh;
+	width: 100%; /* Ensure full width */
+	overflow-x: hidden; /* prevent horizontal scroll */
+	overflow-y: auto; /* allow page-level vertical scrolling so the scrollbar sits at the viewport edge */
+	scrollbar-gutter: stable; /* reserve space for scrollbar to avoid layout shift */
+	margin: 0;
+	padding: 0;
+	background: linear-gradient(135deg, #f0f9ff, #bfe9ff);
+}
+
+.auth-card {
+	background: white;
+	padding: 30px;
+	border-radius: 16px;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+	max-width: 400px;
+	width: 100%;
+	text-align: center;
+
+	/* prefer document-level scrolling so the browser scrollbar is at the viewport edge
+		 keep a generous max height so the card doesn't grow beyond the viewport, but
+		 do not force an internal scrollbar unless absolutely necessary */
+	max-height: calc(100vh - 40px);
+	overflow: visible; /* allow page scrolling at document level */
+}
+
+.auth-card h1 {
+  font-size: 28px;
+  color: #0369a1;
+  margin-bottom: 10px;
+}
+
+.auth-card .subtitle {
+  font-size: 16px;
+  color: #274151;
+  margin-bottom: 20px;
+}
+
+.auth-card .form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.auth-card label {
+  font-size: 14px;
+  color: #062035;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.auth-card input,
+.auth-card select,
+.auth-card button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #bfe9ff;
+  font-size: 14px;
+}
+
+.auth-card button {
+  background: #0369a1;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.auth-card button:hover {
+  background: #0ea5e9;
+}
+
+.auth-card .error-message {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.auth-card .footer-text {
+  font-size: 14px;
+  color: #274151;
+  margin-top: 20px;
+}

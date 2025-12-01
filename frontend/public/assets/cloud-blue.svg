@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1">
+      <stop offset="0" stop-color="#7ad0ff" />
+      <stop offset="1" stop-color="#38bdf8" />
+    </linearGradient>
+    <linearGradient id="g2" x1="0" x2="1">
+      <stop offset="0" stop-color="#dff8ff" />
+      <stop offset="1" stop-color="#bfe9ff" />
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#g2)" rx="12"/>
+  <g transform="translate(40,60) scale(0.9)">
+    <path d="M200 160c-30-80 60-150 130-110 40-80 190-60 200 26 80-10 160 86 98 160-40 46-100 44-148 20-40 32-108 46-168-4-58-48-84-90-112-142z" fill="url(#g1)" opacity="0.95" />
+    <circle cx="160" cy="200" r="30" fill="#eafcff" opacity="0.6" />
+    <circle cx="440" cy="100" r="18" fill="#eafcff" opacity="0.5" />
+  </g>
+  <g fill="#ffffff" opacity="0.08">
+    <text x="32" y="420" font-family="Inter,Segoe UI,Arial" font-size="34">CloudNetOps</text>
+  </g>
+</svg>

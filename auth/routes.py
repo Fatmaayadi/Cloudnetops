@@ -8,7 +8,8 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    username = data.get('username')
+    # support either 'username' or 'email' coming from various frontends
+    username = data.get('username') or data.get('email')
     password = data.get('password')
     role = data.get('role', 'dev')
 
@@ -20,13 +21,16 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    return jsonify({"message": "Utilisateur créé avec succès"}), 201
+    # On successful register, create and return a JWT so the frontend can log in immediately
+    token = create_access_token(identity={"username": user.username, "role": user.role})
+    return jsonify({"message": "Utilisateur créé avec succès", "token": token}), 201
 
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    username = data.get('username')
+    # accept either a 'username' or an 'email' field from different clients
+    username = data.get('username') or data.get('email')
     password = data.get('password')
 
     user = User.query.filter_by(username=username).first()

@@ -16,19 +16,32 @@ s3 = session.client("s3", region_name=AWS_REGION)
 # EC2 FUNCTIONS
 # ------------------------------
 
+
 def create_ec2_instance():
     try:
         instance = ec2.create_instances(
-            ImageId="ami-0c02fb55956c7d316",  # Amazon Linux 2
+            ImageId="ami-0156001f0548e90b1",
             InstanceType="t2.micro",
             MinCount=1,
-            MaxCount=1
+            MaxCount=1,
+            TagSpecifications=[{
+                'ResourceType': 'instance',
+                'Tags': [{'Key': 'CreatedBy', 'Value': 'CloudNetOps'}]
+            }]
         )[0]
 
-        return instance.instance_id
+        instance.wait_until_running()
+        instance.reload()
 
-    except ClientError as e:
+        # Activer le monitoring détaillé
+        ec2_client = boto3.client('ec2', region_name=AWS_REGION)
+        ec2_client.monitor_instances(InstanceIds=[instance.instance_id])
+
+        return instance.instance_id
+    except Exception as e:
         return {"error": str(e)}
+
+
 
 def terminate_ec2_instance(instance_id):
     try:
