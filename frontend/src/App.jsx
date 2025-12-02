@@ -79,6 +79,7 @@ export default function App(){
 
       <main className={`main-content ${hideSidebar ? 'no-sidebar' : ''}`}>
         <Routes>
+          
           <Route path="/" element={<Navigate replace to="/login" />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />

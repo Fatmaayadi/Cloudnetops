@@ -18,38 +18,49 @@ export default function Dashboard(){
     return `il y a ${min} min`
   }
 
-  async function refresh(){
-    setLoading(true)
-    try{
-      // Statut + dernière IA
-      const statusRes = await api.get('/status') // <- assure cette route renvoie {status, last_ai}
-      const status = statusRes?.data?.status || 'ok'
-      const lastAI = statusRes?.data?.last_ai || '—'
+  
+async function refresh() {
+  setLoading(true);
+  let status = 'ok';
+  let lastAI = '—';
+  let runningCount = 0;
+  let bucketCount = 0;
 
-      // EC2: liste réelle, compter running
-      const ec2Res = await api.get('/monitor/ec2/list')
-      const instances = ec2Res?.data?.instances || []
-      const runningCount = instances.filter(i => String(i.state).toLowerCase() === 'running').length
-
-      // S3: nombre réel de buckets
-      const s3Res = await api.get('/monitor/s3/list')
-      const buckets = s3Res?.data?.buckets || []
-      const bucketCount = buckets.length
-
-      setStats({
-        ec2: runningCount,
-        s3: bucketCount,
-        ai: lastAI,
-        status
-      })
-      setLastUpdated(new Date())
-    }catch(e){
-      console.error('Erreur refresh dashboard', e)
-      setStats(s => ({...s, status:'offline'}))
-    }finally{
-      setLoading(false)
-    }
+  try {
+    // Statut + dernière IA
+    const statusRes = await api.get('/status');
+    status = statusRes?.data?.status || 'ok';
+    lastAI = statusRes?.data?.last_ai || '—';
+  } catch (e) {
+    console.error('Erreur /status', e);
+    status = 'offline';
   }
+
+  try {
+    // EC2
+    const ec2Res = await api.get('/monitor/ec2/list');
+    const instances = ec2Res?.data?.instances || [];
+    runningCount = instances.filter(i => String(i.state).toLowerCase() === 'running').length;
+
+    // S3
+    const s3Res = await api.get('/monitor/s3/list');
+    const buckets = s3Res?.data?.buckets || [];
+    bucketCount = buckets.length;
+  } catch (e) {
+    console.error('Erreur EC2/S3', e);
+    // Ne pas écraser status si /status était OK
+  }
+
+  setStats({
+    ec2: runningCount,
+    s3: bucketCount,
+    ai: lastAI,
+    status
+  });
+  setLastUpdated(new Date());
+  setLoading(false);
+}
+
 
   useEffect(() => {
     refresh();

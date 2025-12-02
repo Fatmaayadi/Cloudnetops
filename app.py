@@ -48,20 +48,12 @@ def create_app():
     def home():
         return {"message": "Bienvenue sur CloudNetOps API"}
 
+    
     @app.route('/status', methods=['GET'])
     def status():
-        # Provide a small health/status endpoint consumed by the frontend dashboard.
-        # Try returning the most recent AI recommendation if available.
-        try:
-            from auth.models import Recommendation
-            last = Recommendation.query.order_by(Recommendation.id.desc()).first()
-            last_ai = last.content if last is not None else None
-        except Exception:
-            last_ai = None
-
         return jsonify({
             'status': 'ok',
-            'last_ai': last_ai
+            'last_ai': app_state.last_ai_recommendation
         })
 
     return app
