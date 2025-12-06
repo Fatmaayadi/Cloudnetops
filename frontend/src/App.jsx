@@ -14,19 +14,9 @@ import PrivateRoute from './components/PrivateRoute'
 export default function App(){
   const location = useLocation()
   const [collapsed, setCollapsed] = useState(false)
-  const [theme, setTheme] = useState(() => localStorage.getItem('cnops_theme') || 'sky')
   const navigate = useNavigate()
 
-  useEffect(()=>{
-    try{ document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('cnops_theme', theme) }catch(e){}
-  },[theme])
   const hideSidebar = location.pathname === '/login' || location.pathname === '/signup'
-
-  function toggleTheme() {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
-    document.documentElement.setAttribute('data-theme', newTheme)
-  }
 
   function logout() {
     localStorage.removeItem('cnops_token')
@@ -38,11 +28,15 @@ export default function App(){
       {!hideSidebar && (
         <aside className={`sidebar fade-in ${collapsed ? 'collapsed' : ''}`}>
           <div className="sidebar-brand">
-            <img src="/assets/logo.svg" className="brand-small" alt="CloudNetOps"/>
+            <div className="brand-small">☁️</div>
             <div className="brand-title">CloudNetOps</div>
-            <div style={{marginLeft:8,display:'flex',alignItems:'center',gap:8}}>
-              <button className="sidebar-toggle" onClick={() => setCollapsed(!collapsed)} aria-label="Toggle sidebar">{collapsed ? '»' : '‹'}</button>
-            </div>
+            <button 
+              className="sidebar-toggle" 
+              onClick={() => setCollapsed(!collapsed)} 
+              aria-label="Toggle sidebar"
+            >
+              {collapsed ? '→' : '←'}
+            </button>
           </div>
           <nav className="sidebar-nav">
             <NavLink to="/dashboard" className={({isActive}) => isActive ? 'active' : ''}>
@@ -74,12 +68,19 @@ export default function App(){
               <span className="nav-text">Grafana</span>
             </NavLink>
           </nav>
+          
+          {/* NOUVEAU: Bouton de déconnexion */}
+          <div className="sidebar-footer">
+            <button className="logout-btn" onClick={logout}>
+              <span className="nav-icon">🚪</span>
+              <span className="nav-text">Déconnexion</span>
+            </button>
+          </div>
         </aside>
       )}
 
       <main className={`main-content ${hideSidebar ? 'no-sidebar' : ''}`}>
         <Routes>
-          
           <Route path="/" element={<Navigate replace to="/login" />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
@@ -91,8 +92,6 @@ export default function App(){
           <Route path="/prometheus" element={<PrivateRoute><Prometheus/></PrivateRoute>} />
           <Route path="/grafana" element={<PrivateRoute><Grafana/></PrivateRoute>} />
         </Routes>
-        <footer>
-        </footer>
       </main>
     </div>
   )

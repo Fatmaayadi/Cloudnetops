@@ -4,42 +4,59 @@ import api from '../api/Api'
 export default function S3(){
   const [name,setName]=useState('')
   const [region,setRegion]=useState('us-east-1')
-  const [res,setRes]=useState(null)
   const [delName,setDelName]=useState('')
-  const [delRes,setDelRes]=useState(null)
   const [buckets,setBuckets] = useState([])
+  const [loading,setLoading] = useState(false)
+
+  async function load(){ 
+    try{ 
+      const r = await api.get('/monitor/s3/list'); 
+      setBuckets(r.data.buckets||[]) 
+    }catch(e){
+      console.error('Erreur chargement buckets:', e)
+    } 
+  }
 
   useEffect(()=>{ 
-    async function load(){ 
-      try{ 
-        const r = await api.get('/monitor/s3/list'); 
-        setBuckets(r.data.buckets||[]) 
-      }catch(e){} 
-    } 
-    load() 
+    load();
+    const interval = setInterval(load, 10000);
+    return () => clearInterval(interval);
   },[])
 
   async function create(e){
-    e.preventDefault(); setRes(null)
+    e.preventDefault();
+    setLoading(true);
     try{ 
-      const r = await api.post('/deploy/s3/create', { bucket_name: name, region });
-      setRes(r.data)
-      await api.get('/deploy/summary') // refresh compteur dashboard
-    }catch(err){ setRes({error:err?.response?.data||'Erreur'}) }
+      await api.post('/deploy/s3/create', { bucket_name: name, region });
+      setName(''); // Reset form
+      await load(); // Refresh liste
+    }catch(err){ 
+      console.error('Erreur création bucket:', err)
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function remove(e){
-    e.preventDefault(); setDelRes(null)
+    e.preventDefault();
+    setLoading(true);
     try{ 
-      const r = await api.post('/deploy/s3/delete', { bucket_name: delName });
-      setDelRes(r.data)
-      await api.get('/deploy/summary') // refresh compteur dashboard
-    }catch(err){ setDelRes({error:err?.response?.data||'Erreur'}) }
+      await api.post('/deploy/s3/delete', { bucket_name: delName });
+      setDelName(''); // Reset form
+      await load(); // Refresh liste
+    }catch(err){ 
+      console.error('Erreur suppression bucket:', err)
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <div className="page">
-      <h1>Gestion S3</h1>
+      <div className="page-header">
+        <h1>Gestion S3</h1>
+        <p>Créer et gérer vos buckets S3</p>
+      </div>
       <div className="grid">
         <div className="card interactive">
           <div className="card-header">
@@ -47,7 +64,7 @@ export default function S3(){
               <div className="card-icon"><img src="/assets/icons/s3.svg" alt="s3"/></div>
               <div>
                 <div className="card-title">Créer un bucket</div>
-                <div className="card-sub">Nouveau bucket S3</div>
+                <div className="card-subtitle">Nouveau bucket S3</div>
               </div>
             </div>
           </div>
@@ -58,8 +75,9 @@ export default function S3(){
               <option>eu-west-1</option>
               <option>ap-southeast-1</option>
             </select></label>
-            <button className="primary">Créer</button>
-            {res && <pre className="mono">{JSON.stringify(res,null,2)}</pre>}
+            <button className="primary" disabled={loading}>
+              {loading ? '⏳ Création...' : 'Créer'}
+            </button>
           </form>
         </div>
 
@@ -69,36 +87,42 @@ export default function S3(){
               <div className="card-icon"><img src="/assets/icons/s3.svg" alt="s3"/></div>
               <div>
                 <div className="card-title">Supprimer un bucket</div>
-                <div className="card-sub">Retirer un bucket existant</div>
+                <div className="card-subtitle">Retirer un bucket existant</div>
               </div>
             </div>
           </div>
           <form className="form-card" onSubmit={remove}>
             <label>Nom<input value={delName} onChange={e=>setDelName(e.target.value)} required/></label>
-            <button className="danger">Supprimer</button>
-            {delRes && <pre className="mono">{JSON.stringify(delRes,null,2)}</pre>}
+            <button className="danger" disabled={loading}>
+              {loading ? '⏳ Suppression...' : 'Supprimer'}
+            </button>
           </form>
         </div>
 
         <div className="card interactive">
-          <div className="card-header">
+          <div className="card-header" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
             <div className="card-head">
               <div className="card-icon"><img src="/assets/icons/s3.svg" alt="s3"/></div>
               <div>
                 <div className="card-title">Buckets existants</div>
-                <div className="card-sub">Liste récente</div>
+                <div className="card-subtitle">Liste récente</div>
               </div>
             </div>
+            <button className="secondary" onClick={load}>🔄 Rafraîchir</button>
           </div>
           <div className="card-body">
             {buckets.length === 0 ? (
-              <div className="muted">Aucun bucket trouvé — créez-en un ou rafraîchissez.</div>
+              <div style={{textAlign:'center',padding:40}}>
+                <div style={{fontSize:48,marginBottom:12}}>💾</div>
+                <div style={{color:'#2d3748',fontWeight:600,marginBottom:4}}>Aucun bucket trouvé</div>
+                <div style={{color:'#718096',fontSize:14}}>Créez-en un ou rafraîchissez</div>
+              </div>
             ) : (
               <div style={{display:'flex',flexDirection:'column',gap:8,maxHeight:260,overflowY:'auto'}}>
                 {buckets.map(b=> (
-                  <div key={b.name} style={{padding:10,borderRadius:8,background:'rgba(255,255,255,0.6)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                    <div style={{fontWeight:700}}>{b.name}</div>
-                    <div style={{fontSize:13,color:'#274151'}}>{b.region || '—'}</div>
+                  <div key={b.name} style={{padding:10,borderRadius:8,background:'rgba(16,185,129,0.08)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                    <div style={{fontWeight:700,color:'#2d3748'}}>{b.name}</div>
+                    <div style={{fontSize:13,color:'#10b981',fontWeight:600}}>{b.region || '—'}</div>
                   </div>
                 ))}
               </div>
