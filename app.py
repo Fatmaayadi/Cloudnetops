@@ -39,11 +39,13 @@ def create_app():
     from monitoring.routes import monitor_bp
     from ai.api import ai_bp           # <---- à ajouter pour IA
     from monitoring.routes import status_bp
+    from k8s import k8s_bp
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(deploy_bp, url_prefix="/deploy")
     app.register_blueprint(monitor_bp, url_prefix="/monitor")
     app.register_blueprint(ai_bp, url_prefix="/ai")   # <---- à ajouter
     app.register_blueprint(status_bp, url_prefix='')
+    app.register_blueprint(k8s_bp)
     @app.route("/")
     def home():
         return {"message": "Bienvenue sur CloudNetOps API"}

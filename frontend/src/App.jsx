@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Routes, Route, NavLink, useLocation, useNavigate, Navigate } from 'react-router-dom'
 import Login from './components/Login'
 import Signup from './components/Signup'
@@ -10,17 +10,18 @@ import AI from './components/AI'
 import Prometheus from './components/Prometheus'
 import Grafana from './components/Grafana'
 import PrivateRoute from './components/PrivateRoute'
+import KubernetesInterface from './components/KubernetesInterface'
 
 export default function App(){
   const location = useLocation()
   const [collapsed, setCollapsed] = useState(false)
   const navigate = useNavigate()
 
-  const hideSidebar = location.pathname === '/login' || location.pathname === '/signup'
+  const hideSidebar = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/kubernetes'
 
   function logout() {
     localStorage.removeItem('cnops_token')
-    navigate('/login')
+    navigate('/')
   }
 
   return (
@@ -69,7 +70,6 @@ export default function App(){
             </NavLink>
           </nav>
           
-          {/* NOUVEAU: Bouton de déconnexion */}
           <div className="sidebar-footer">
             <button className="logout-btn" onClick={logout}>
               <span className="nav-icon">🚪</span>
@@ -81,9 +81,10 @@ export default function App(){
 
       <main className={`main-content ${hideSidebar ? 'no-sidebar' : ''}`}>
         <Routes>
-          <Route path="/" element={<Navigate replace to="/login" />} />
+          
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/" element={<KubernetesInterface />} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard/></PrivateRoute>} />
           <Route path="/ec2" element={<PrivateRoute><EC2/></PrivateRoute>} />
           <Route path="/s3" element={<PrivateRoute><S3/></PrivateRoute>} />
