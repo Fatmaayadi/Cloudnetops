@@ -18,7 +18,7 @@ export default function AI() {
     setLoadingInstances(true);
     try {
       const r = await api.get('/monitor/ec2/list');
-      setInstances(r.data.instances || []);
+      setInstances((r.data.instances || []).filter(i => i.state === "running"));
     } catch (e) {
       console.error('Erreur chargement instances', e);
       setError("Impossible de charger la liste des instances EC2.");

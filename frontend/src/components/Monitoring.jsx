@@ -80,13 +80,17 @@ export default function Monitoring() {
         <div className="form-group">
           <label>Instance EC2</label>
           <select value={selected} onChange={e => setSelected(e.target.value)}>
-            <option value="">-- Choisir une instance --</option>
-            {instances.map(i => (
-              <option key={i.instanceId} value={i.instanceId}>
-                {i.name ? `${i.instanceId} — ${i.name}` : i.instanceId}
-              </option>
-            ))}
-          </select>
+  <option value="">-- Choisir une instance --</option>
+  {instances
+    .filter(i => i.state !== 'terminated') // ignore les terminées
+    .map(i => (
+      <option key={i.instanceId} value={i.instanceId}>
+        {i.name ? `${i.instanceId} — ${i.name}` : i.instanceId}
+      </option>
+    ))
+  }
+</select>
+
         </div>
         
         <div className="row" style={{ marginTop: 16 }}>
